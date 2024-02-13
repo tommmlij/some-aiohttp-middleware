@@ -44,9 +44,9 @@ async def test_method_kwargs_method_kwargs(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x1'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x2'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x3'})).a()
 
     out, err = capfd.readouterr()
 
@@ -75,9 +75,9 @@ async def test_method_kwargs_method(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x4'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x5'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x6'})).a()
 
     out, err = capfd.readouterr()
 
@@ -105,9 +105,9 @@ async def test_method_method_kwargs(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x7'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x8'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x9'})).a()
 
     out, err = capfd.readouterr()
 

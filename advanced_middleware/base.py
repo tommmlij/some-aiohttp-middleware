@@ -1,10 +1,11 @@
 import asyncio
 from abc import ABC, abstractmethod
 from functools import wraps, partial
-from typing import Callable
 
 from aiohttp import hdrs
 from aiohttp.web import View
+from aiohttp.web_middlewares import middleware
+from aiohttp.web_response import json_response
 
 
 class HybridMethod(object):
@@ -24,7 +25,7 @@ class HybridMethod(object):
     The class HybridMethod acts as a descriptor. On initialization the decorated function is
     stored in the class.
     When the __get__ method of the descriptor is called, it is checked, if it was called
-    bound or unbound. In case of the later, the context is set to the class.
+    bound or unbound. In case of the latter, the context is set to the class.
 
     """
 
@@ -115,3 +116,16 @@ class MiddlewareBase(ABC):
                 return response
 
             return wrapper_function
+
+    @HybridMethod
+    def middleware(cls_or_self, *_args, **kwargs):
+        @middleware
+        @wraps(cls_or_self.middleware)
+        async def mw(request, handler):
+            await cls_or_self.handle(request=request, **(cls_or_self.kwargs | kwargs))
+            response = await handler(request)
+            await cls_or_self.unhandle(request=request, response=response,
+                                       **(cls_or_self.kwargs | kwargs))
+            return response
+
+        return mw

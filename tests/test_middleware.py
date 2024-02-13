@@ -1,15 +1,11 @@
-import asyncio
-
 from aiohttp import web
 import inspect
 
-from aiohttp.web import View, run_app
+import pytest
+from aiohttp.web import View
 from aiohttp.web_exceptions import HTTPOk
-from aiohttp.web_middlewares import middleware
-from aiohttp.web_response import json_response
 
 from advanced_middleware import MiddlewareBase
-from advanced_middleware.admin_auth_handler import AdminAuthHandler
 
 
 class Middleware(MiddlewareBase):
@@ -29,20 +25,21 @@ class Middleware(MiddlewareBase):
         assert request["amw"] == {'foo': 'bar', 'hello': 'world'}
 
 
-@AdminAuthHandler.decorate
-class TestView(View):
-    async def get(self):
-        assert "amw" in self.request
-        assert self.request["amw"] == {'foo': 'bar', 'hello': 'world'}
-        print(inspect.currentframe().f_code.co_name, end="_")
-        return HTTPOk(text="Hello, world")
+@pytest.mark.asyncio
+async def test_middleware(capfd, aiohttp_client, loop):
+    class TestView(View):
+        async def get(self):
+            assert "amw" in self.request
+            assert self.request["amw"] == {'foo': 'bar', 'hello': 'world'}
+            print(inspect.currentframe().f_code.co_name, end="_")
+            return HTTPOk(text="Hello, world")
 
-
-if __name__ == '__main__':
     app = web.Application(
-        middlewares=[
-        ]
+        middlewares=[Middleware(foo="bar", hello="world").middleware()]
     )
     app.router.add_view('/', TestView)
-
-    run_app(app, port=1500)
+    client = await aiohttp_client(app)
+    resp = await client.get('/')
+    assert resp.status == 200
+    text = await resp.text()
+    assert 'Hello, world' in text

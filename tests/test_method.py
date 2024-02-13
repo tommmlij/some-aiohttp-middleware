@@ -43,9 +43,9 @@ async def test_method_no_pars_no_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x11'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x12'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x13'})).a()
 
     out, err = capfd.readouterr()
 
@@ -69,9 +69,9 @@ async def test_method_pars_no_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x14'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x15'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x16'})).a()
 
     out, err = capfd.readouterr()
 
@@ -98,9 +98,9 @@ async def test_method_pars_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x17'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x18'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x19'})).a()
 
     out, err = capfd.readouterr()
 
@@ -127,11 +127,10 @@ async def test_method_no_pars_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x20'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x21'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x22'})).a()
 
     out, err = capfd.readouterr()
 
     assert out == "handle_get_unhandlehandle_post_unhandlea_"
-

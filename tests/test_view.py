@@ -45,9 +45,9 @@ async def test_class_no_pars_no_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x21'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x22'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x23'})).a()
 
     out, err = capfd.readouterr()
 
@@ -72,9 +72,9 @@ async def test_class_pars_no_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x24'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x25'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x26'})).a()
 
     out, err = capfd.readouterr()
 
@@ -99,9 +99,9 @@ async def test_class_pars_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x27'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x28'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x29'})).a()
 
     out, err = capfd.readouterr()
 
@@ -126,9 +126,9 @@ async def test_class_no_pars_pars(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x30'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x31'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x32'})).a()
 
     out, err = capfd.readouterr()
 
@@ -153,9 +153,9 @@ async def test_class_kwargs_method_kwargs(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x33'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x34'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x35'})).a()
 
     out, err = capfd.readouterr()
 
@@ -180,9 +180,9 @@ async def test_class_kwargs_method(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x36'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x37'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x38'})).a()
 
     out, err = capfd.readouterr()
 
@@ -207,9 +207,9 @@ async def test_class_method_kwargs(capfd):
             _ = self
             print(inspect.currentframe().f_code.co_name, end="_")
 
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
-    await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).a()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x39'})).get()
+    await Test(make_mocked_request('POST', '/', headers={'token': 'x40'})).post()
+    await Test(make_mocked_request('GET', '/', headers={'token': 'x41'})).a()
 
     out, err = capfd.readouterr()
 
