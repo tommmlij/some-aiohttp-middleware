@@ -10,37 +10,32 @@ from advanced_middleware import MiddlewareBase
 class Middleware(MiddlewareBase):
 
     @staticmethod
-    async def handle(*args, **kwargs):
-        if kwargs.get("foo"):
-            print(kwargs.get("foo"), end="_")
-        if kwargs.get("hello"):
-            print(kwargs.get("hello"), end="_")
-        print("handle", end="_")
+    async def handle(request, **kwargs):
+        print("handle")
+        request["amw"] = {
+            "foo": kwargs.get("foo", None),
+            "hello": kwargs.get("hello", None)
+        }
 
     @staticmethod
-    async def unhandle(*args, **kwargs):
-        if kwargs.get("foo"):
-            print(kwargs.get("foo"), end="_")
-        if kwargs.get("hello"):
-            print(kwargs.get("hello"), end="_")
-        print("unhandle", end="")
+    async def unhandle(request, response, **kwargs):
+        print("unhandle")
+        assert "amw" in request
+        assert request["amw"] == {'foo': 'bar', 'hello': 'world'}
+
+        return response
 
 
 async def main():
-    @Middleware(hello="world").decorate(foo="bar")
     class Test(View):
         @staticmethod
         async def get():
-            print(inspect.currentframe().f_code.co_name, end="_")
             return HTTPOk()
 
+        @Middleware(hello="world").decorate(foo="bar")
         async def post(self):
-            _ = self
-            print(inspect.currentframe().f_code.co_name, end="_")
-            print()
-            print(self.request)
-            print(self.request.headers)
-            print()
+            assert "amw" in self.request
+            assert self.request["amw"] == {'foo': 'bar', 'hello': 'world'}
             return HTTPOk()
 
         async def a(self):
@@ -48,11 +43,8 @@ async def main():
             print(inspect.currentframe().f_code.co_name, end="_")
             return HTTPOk()
 
+    resp1 = await Test(make_mocked_request('GET', '/', headers={'token': 'x'})).get()
     resp2 = await Test(make_mocked_request('POST', '/', headers={'token': 'x'})).post()
-    print()
-
-    print(resp2)
-    print(type(resp2))
 
 
 if __name__ == '__main__':

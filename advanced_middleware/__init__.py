@@ -1,1 +1,1 @@
-from .advanced_middleware import MiddlewareBase  # noqa: F401
+from .base import MiddlewareBase  # noqa: F401
