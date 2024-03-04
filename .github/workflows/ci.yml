@@ -4,16 +4,22 @@ on:
     branches:
       - main
 jobs:
-  run:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      #----------------------------------------------
+      #       check-out repo and set-up python
+      #----------------------------------------------
+      - name: Check out repository
         uses: actions/checkout@v4
-      - name: Set up Python 3.11
+      - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
+      #----------------------------------------------
+      #  -----  install & configure poetry  -----
+      #----------------------------------------------
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
