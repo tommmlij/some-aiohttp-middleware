@@ -27,7 +27,7 @@ jobs:
       - name: Install the project dependencies
         run: |
           poetry self add "poetry-dynamic-versioning[plugin]"
-          poetry install
+          poetry install --with test
       - name: Run tests and collect coverage
         run: |
           coverage run -m pytest
