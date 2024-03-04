@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from functools import wraps, partial
 
 from aiohttp import hdrs
-from aiohttp.web import View
+from aiohttp.web import View, Request
 from aiohttp.web_middlewares import middleware
 
 log = logging.getLogger()
@@ -60,7 +60,7 @@ class MiddlewareBase(ABC):
 
     @staticmethod
     @abstractmethod
-    async def handle(request, **kwargs):  # pragma: no cover
+    async def handle(request, **kwargs) -> Request:  # pragma: no cover
         pass
 
     @staticmethod

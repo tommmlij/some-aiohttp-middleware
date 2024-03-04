@@ -1,0 +1,6 @@
+![Static Badge](https://img.shields.io/badge/Python-3.8%2B-brightgreen?logo=python)
+![PyPI - Version](https://img.shields.io/pypi/v/some_aiohttp_middleware?logo=pypi&logoColor=yellow&color=brightgreen)
+![PyPI - License](https://img.shields.io/pypi/l/some_aiohttp_middleware)
+[![codecov](https://codecov.io/gh/tommmlij/some_aiohttp_middleware/graph/badge.svg?token=GDLHRPUVCG)](https://codecov.io/gh/tommmlij/some_aiohttp_middleware)
+![Static Badge](https://img.shields.io/badge/mypy-checked-blue)
+![Static Badge](https://img.shields.io/badge/flake8-linted-green)
