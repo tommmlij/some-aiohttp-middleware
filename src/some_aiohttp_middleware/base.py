@@ -1,11 +1,13 @@
 import asyncio
+import logging
 from abc import ABC, abstractmethod
 from functools import wraps, partial
 
 from aiohttp import hdrs
 from aiohttp.web import View
 from aiohttp.web_middlewares import middleware
-from aiohttp.web_response import json_response
+
+log = logging.getLogger()
 
 
 class HybridMethod(object):
@@ -58,7 +60,7 @@ class MiddlewareBase(ABC):
 
     @staticmethod
     @abstractmethod
-    async def handle(request, **kwargs):
+    async def handle(request, **kwargs):  # pragma: no cover
         pass
 
     @staticmethod
@@ -93,7 +95,15 @@ class MiddlewareBase(ABC):
                         async def wrapper():
 
                             await cls_or_self.handle(request=self.request, **(cls_or_self.kwargs | kwargs))
-                            response = await obj(self.request)
+                            try:
+                                response = await obj(self.request)
+                            except Exception as e:
+                                log.debug(
+                                    f"{type(e).__name__} while handling request. "
+                                    f"Unhandling {type(cls_or_self).__name__}")
+                                await cls_or_self.unhandle(request=self.request, response=None,
+                                                           **(cls_or_self.kwargs | kwargs))
+                                raise e
                             await cls_or_self.unhandle(request=self.request, response=response,
                                                        **(cls_or_self.kwargs | kwargs))
                             return response
@@ -110,7 +120,13 @@ class MiddlewareBase(ABC):
             async def wrapper_function(view):
 
                 await cls_or_self.handle(request=view.request, **(cls_or_self.kwargs | kwargs))
-                response = await obj(view)
+                try:
+                    response = await obj(view)
+                except Exception as e:
+                    log.debug(f"{type(e).__name__} while handling request. Unhandling {type(cls_or_self).__name__}")
+                    await cls_or_self.unhandle(request=view.request, response=None,
+                                               **(cls_or_self.kwargs | kwargs))
+                    raise e
                 await cls_or_self.unhandle(request=view.request, response=response,
                                            **(cls_or_self.kwargs | kwargs))
                 return response
@@ -123,7 +139,14 @@ class MiddlewareBase(ABC):
         @wraps(cls_or_self.middleware)
         async def mw(request, handler):
             await cls_or_self.handle(request=request, **(cls_or_self.kwargs | kwargs))
-            response = await handler(request)
+            try:
+                response = await handler(request)
+
+            except Exception as e:
+                log.debug(f"{type(e).__name__} while handling request. Unhandling {type(cls_or_self).__name__}")
+                await cls_or_self.unhandle(request=request, response=None,
+                                           **(cls_or_self.kwargs | kwargs))
+                raise e
             await cls_or_self.unhandle(request=request, response=response,
                                        **(cls_or_self.kwargs | kwargs))
             return response
