@@ -33,6 +33,7 @@ jobs:
           poetry install --with test --no-interaction
       - name: Run tests and collect coverage
         run: |
+          source .venv/bin/activate
           coverage run -m pytest
           coverage xml
       - name: Upload coverage reports to Codecov
