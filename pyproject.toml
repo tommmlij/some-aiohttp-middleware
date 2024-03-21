@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "some_aiohttp_middleware"
-version = "0.1.0"
+name = "some-aiohttp-middleware"
+version = "0.1.1"
 description = "Middleware framework for aiohttp"
 authors = ["tommmlij <tommmlij@gmail.com>"]
 readme = "README.md"
@@ -26,6 +26,8 @@ pytest-aiohttp = "^1.0.5"
 colorlog = "^6.8.2"
 coverage = "^7.4.3"
 mypy = "^1.8.0"
+black = "^24.2.0"
+isort = "^5.13.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.0"
@@ -34,6 +36,8 @@ pytest-asyncio = "^0.23.5"
 pytest-aiohttp = "^1.0.5"
 coverage = "^7.4.3"
 mypy = "^1.8.0"
+black = "^24.2.0"
+isort = "^5.13.2"
 
 [build-system]
 requires = ["poetry-core", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]

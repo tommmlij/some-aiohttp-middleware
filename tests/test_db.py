@@ -1,6 +1,5 @@
-from aiohttp import web
-
 import pytest
+from aiohttp import web
 from aiohttp.web import View
 
 from some_aiohttp_middleware import DB, Postgres

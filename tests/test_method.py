@@ -1,8 +1,8 @@
 import inspect
 
 import pytest
-from aiohttp.web import View
 from aiohttp.test_utils import make_mocked_request
+from aiohttp.web import View
 from aiohttp.web_exceptions import HTTPOk
 
 from some_aiohttp_middleware import MiddlewareBase

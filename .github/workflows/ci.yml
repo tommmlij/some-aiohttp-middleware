@@ -1,10 +1,21 @@
 name: CI for some-aiohttp-middleware
 on:
   push:
-    branches:
-      - main
+    tags: ['v[0-9]+.[0-9]+.[0-9]+', 'test[0-9]+.[0-9]+.[0-9]+']
+
 jobs:
-  run:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip
+          restore-keys: ${{ runner.os }}-pip
+
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

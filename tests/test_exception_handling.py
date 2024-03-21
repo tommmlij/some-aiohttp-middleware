@@ -1,8 +1,7 @@
 import logging
 
-from aiohttp import web
-
 import pytest
+from aiohttp import web
 from aiohttp.web import View
 from aiohttp.web_exceptions import HTTPInternalServerError
 
