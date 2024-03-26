@@ -10,7 +10,9 @@ from some_aiohttp_middleware import DB, Postgres
 
 
 class Config(BaseModel):
-    dsn: PostgresDsn = PostgresDsn("postgresql+asyncpg://postgres:postgres@localhost:5432/postgres")
+    dsn: PostgresDsn = PostgresDsn(
+        "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+    )
     pool_overflow: conint(ge=1, le=1000) = 10
     pool_size_max: conint(ge=1, le=1000) = 50
     pool_timeout: conint(ge=1, le=1000) = 120

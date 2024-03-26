@@ -21,7 +21,9 @@ async def test_db_missing_dsn():
 
 
 class RightConfig(BaseModel):
-    dsn: PostgresDsn = PostgresDsn("postgresql+asyncpg://postgres:postgres@localhost:5432/postgres")
+    dsn: PostgresDsn = PostgresDsn(
+        "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+    )
 
 
 @pytest.mark.asyncio
