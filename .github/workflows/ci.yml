@@ -1,14 +1,16 @@
 name: CI for some-aiohttp-middleware
 on:
   push:
-#    tags: ['v[0-9]+.[0-9]+.[0-9]+', 'test[0-9]+.[0-9]+.[0-9]+']
+    tags: ['v[0-9]+.[0-9]+.[0-9]+', 'test[0-9]+.[0-9]+.[0-9]+']
 
 jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - uses: actions/cache@v4
@@ -93,3 +95,54 @@ jobs:
           directory: .
           fail_ci_if_error: true
           files: ./coverage.xml
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs:
+      - linting
+      - test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Build
+        run: |
+          poetry self add "poetry-dynamic-versioning[plugin]"
+          poetry install --no-interaction
+          poetry build
+      - name: Store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  pypi-publish:
+    name: Upload to PyPI
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    environment:
+      name: "${{ startsWith(github.ref, 'refs/tags/test') && 'TestPyPi' || 'PyPi' }}"
+      url: "${{ startsWith(github.ref, 'refs/tags/test') && 'https://test.pypi.org/project/some-aiohttp-middleware' || 'https://pypi.org/project/some-aiohttp-middleware' }}"
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish package distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
