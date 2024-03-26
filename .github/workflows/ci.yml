@@ -9,11 +9,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - uses: actions/cache@v3
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip
           restore-keys: ${{ runner.os }}-pip
+      - name: Install linter
+        id: linter
+        run: python -m pip install black flake8 isort
+      - name: Flake8
+        id: flake8
+        run: |
+          flake8 . > /tmp/flake8 2>&1 && exit 0
+          echo "# flake8" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/flake8 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit 1
+        if: always()
+      - name: black
+        run: |
+          black . --check > /tmp/black 2>&1 && exit 0
+          echo "# black" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/black >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit 1
+        if: always()
+      - name: isort
+        run: |
+          isort . -c > /tmp/isort 2>&1 && exit 0
+          echo "# isort" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/isort >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit 1
+        if: always()
+
 
   test:
     runs-on: ubuntu-latest
@@ -42,10 +76,6 @@ jobs:
         run: |
           poetry self add "poetry-dynamic-versioning[plugin]"
           poetry install --with test --no-interaction
-      - name: Linting
-        run: |
-          source .venv/bin/activate
-          flake8
       - name: Typing
         run: |
           source .venv/bin/activate

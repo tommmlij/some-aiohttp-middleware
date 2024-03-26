@@ -1,33 +1,28 @@
 import operator
+import re
 from functools import reduce
+from typing import Annotated, Any
 
-from aiohttp.web_exceptions import (HTTPInternalServerError, HTTPUnauthorized,
-                                    HTTPUnprocessableEntity)
-from marshmallow import EXCLUDE, Schema, ValidationError, fields, post_load
+from pydantic import AfterValidator, BaseModel, ValidationError
 
 from .base import MiddlewareBase
 
+from aiohttp.web_exceptions import (  # isort:skip
+    HTTPInternalServerError,
+    HTTPUnauthorized,
+    HTTPUnprocessableEntity,
+)
 
-class AuthorizationSchema(Schema):
-    class Meta:
-        unknown = EXCLUDE
 
-    authorization = fields.String(required=True)
+def bearer_check(v: Any) -> Any:
+    try:
+        return re.match(r"^Bearer\s([a-z\d]*)$", v).group(1)
+    except AttributeError:
+        raise HTTPUnprocessableEntity(reason="Malformed bearer token")
 
-    def handle_error(self, exc, data, **kwargs):
-        raise HTTPUnprocessableEntity(reason=exc)
 
-    @post_load
-    def validate(self, data, **_kwargs):
-        try:
-            auth = data.get("authorization", None)
-            _, bearer_token = auth.split(" ")
-            return bearer_token
-
-        except (ValueError, TypeError, AttributeError):
-            raise ValidationError(
-                field_name="authorization", message="Malformed authorization header"
-            )
+class Bearer(BaseModel):
+    authorization: Annotated[str, AfterValidator(bearer_check)]
 
 
 class AdminAuthHandler(MiddlewareBase):
@@ -35,18 +30,27 @@ class AdminAuthHandler(MiddlewareBase):
     @staticmethod
     async def handle(request, *args, admin_token=None, token_location=None, **kwargs):
 
-        assert not (
-            admin_token is None and token_location is None
-        ), "Admin token or location in the configuration needed"
+        if token_location is None:
+            token_location = ["admin_token"]
 
         try:
             admin_token = admin_token or reduce(
-                operator.getitem, token_location, request.app
+                operator.getitem, token_location, request.app.config
             )
-        except (KeyError, TypeError):
-            raise HTTPInternalServerError(reason="Missing configuration")
+        except (KeyError, TypeError, AttributeError):
+            raise HTTPInternalServerError(
+                reason="Missing configuration, either pass 'admin_token' or 'token_location'"
+            )
 
-        if admin_token != AuthorizationSchema().load(request.headers):
-            raise HTTPUnauthorized
+        try:
+            if (
+                Bearer(
+                    authorization=request.headers.getone("authorization", None)
+                ).authorization
+                != admin_token
+            ):
+                raise HTTPUnauthorized
+        except ValidationError:
+            raise HTTPUnprocessableEntity(reason="Missing authorization header")
 
         return request

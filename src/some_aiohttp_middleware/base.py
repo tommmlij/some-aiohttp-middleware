@@ -6,6 +6,7 @@ from functools import partial, wraps
 from aiohttp import hdrs
 from aiohttp.web import Request, View
 from aiohttp.web_middlewares import middleware
+from aiohttp_pydantic import PydanticView
 
 log = logging.getLogger()
 
@@ -74,86 +75,56 @@ class MiddlewareBase(ABC):
             # We add the kwargs via partial and return the decorator function
             return partial(cls_or_self.decorate, **kwargs)
 
-        if isinstance(obj, type):  # class
-            # The decorator was used on a class
-            assert issubclass(obj, View)
+        # The decorator was used on a class
+        assert issubclass(obj, (View, PydanticView))
 
-            class NewClass(obj):
-                def __init__(self, *i_args, **i_kwargs):
-                    super().__init__(*i_args, *i_kwargs)
+        class NewClass(obj):
+            def __init__(self, *i_args, **i_kwargs):
+                super().__init__(*i_args, *i_kwargs)
 
-                def __getattribute__(self, name):
-                    # Get the original method
-                    original_method = super().__getattribute__(name)
+            def __getattribute__(self, name):
+                # Get the original method
+                original_method = super().__getattribute__(name)
 
-                    # Check if the attribute is one of the View method to be decorated
-                    if (
-                        callable(original_method)
-                        and asyncio.iscoroutinefunction(original_method)
-                        and str(name).upper() in hdrs.METH_ALL
-                    ):
+                # Check if the attribute is one of the View method to be decorated
+                if (
+                    callable(original_method)
+                    and asyncio.iscoroutinefunction(original_method)
+                    and str(name).upper() in hdrs.METH_ALL
+                ):
 
-                        @wraps(obj)
-                        async def wrapper():
+                    @wraps(obj)
+                    async def wrapper():
 
-                            await cls_or_self.handle(
-                                request=self.request, **(cls_or_self.kwargs | kwargs)
+                        await cls_or_self.handle(
+                            request=self.request, **(cls_or_self.kwargs | kwargs)
+                        )
+                        try:
+                            response = await obj(self.request)
+                        except Exception as e:
+                            log.debug(
+                                f"{type(e).__name__} while handling request. "
+                                f"Unhandling {type(cls_or_self).__name__}"
                             )
-                            try:
-                                response = await obj(self.request)
-                            except Exception as e:
-                                log.debug(
-                                    f"{type(e).__name__} while handling request. "
-                                    f"Unhandling {type(cls_or_self).__name__}"
-                                )
-                                await cls_or_self.unhandle(
-                                    request=self.request,
-                                    response=None,
-                                    **(cls_or_self.kwargs | kwargs),
-                                )
-                                raise e
                             await cls_or_self.unhandle(
                                 request=self.request,
-                                response=response,
+                                response=None,
                                 **(cls_or_self.kwargs | kwargs),
                             )
-                            return response
+                            raise e
+                        await cls_or_self.unhandle(
+                            request=self.request,
+                            response=response,
+                            **(cls_or_self.kwargs | kwargs),
+                        )
+                        return response
 
-                        return wrapper
+                    return wrapper
 
-                    else:
-                        return original_method
+                else:
+                    return original_method
 
-            return NewClass
-
-        else:  # function
-
-            @wraps(obj)
-            async def wrapper_function(view):
-
-                await cls_or_self.handle(
-                    request=view.request, **(cls_or_self.kwargs | kwargs)
-                )
-                try:
-                    response = await obj(view)
-                except Exception as e:
-                    log.debug(
-                        f"{type(e).__name__} while handling request. Unhandling {type(cls_or_self).__name__}"
-                    )
-                    await cls_or_self.unhandle(
-                        request=view.request,
-                        response=None,
-                        **(cls_or_self.kwargs | kwargs),
-                    )
-                    raise e
-                await cls_or_self.unhandle(
-                    request=view.request,
-                    response=response,
-                    **(cls_or_self.kwargs | kwargs),
-                )
-                return response
-
-            return wrapper_function
+        return NewClass
 
     @HybridMethod
     def middleware(cls_or_self, *_args, **kwargs):
