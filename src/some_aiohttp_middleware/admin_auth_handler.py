@@ -35,7 +35,9 @@ class AdminAuthHandler(MiddlewareBase):
 
         try:
             admin_token = admin_token or reduce(
-                operator.getitem, token_location, request.app.config
+                operator.getitem,
+                token_location if isinstance(token_location, list) else [token_location],
+                dict(request.app.config)
             )
         except (KeyError, TypeError, AttributeError):
             raise HTTPInternalServerError(
