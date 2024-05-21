@@ -29,6 +29,17 @@ async def aiohttp_app():
 
 
 @pytest.mark.asyncio
+async def test_missing_auth(aiohttp_server, aiohttp_client, aiohttp_app, caplog):
+    server = await aiohttp_server(aiohttp_app)
+    client = await aiohttp_client(server)
+
+    resp = await client.get("/test")
+    assert resp.status == HTTPUnauthorized.status_code
+    text = await resp.text()
+    assert text == "Missing authorization header"
+
+
+@pytest.mark.asyncio
 async def test_successful_auth_1(aiohttp_server, aiohttp_client, aiohttp_app, caplog):
     server = await aiohttp_server(aiohttp_app)
     client = await aiohttp_client(server)

@@ -21,6 +21,8 @@ class BasicAuthModel(BaseModel):
 
     @model_validator(mode="before")
     def decode_basic_auth(self) -> Any:
+        if self is None:
+            raise HTTPUnauthorized(text="Missing authorization header")
         try:
             decode = urlsafe_b64decode(
                 self.replace("Basic ", "").encode("utf-8")
