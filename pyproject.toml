@@ -18,9 +18,9 @@ aiohttp = "^3.9.3"
 sqlalchemy = "^2.0.27"
 asyncpg = "^0.29.0"
 pydantic = "^2.6.4"
-aiohttp-pydantic = {git = "https://github.com/tommmlij/aiohttp-pydantic", rev = "tommmlij/fix-custom-types"}
 pydantic-settings = "^2.2.1"
 aioboto3 = "^12.4.0"
+aiohttp-pydantic = "^2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
