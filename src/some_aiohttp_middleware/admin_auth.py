@@ -25,7 +25,7 @@ class Bearer(BaseModel):
     authorization: Annotated[str, AfterValidator(bearer_check)]
 
 
-class AdminAuthHandler(MiddlewareBase):
+class AdminAuth(MiddlewareBase):
 
     @staticmethod
     async def handle(request, *args, admin_token=None, token_location=None, **kwargs):

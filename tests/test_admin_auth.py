@@ -3,12 +3,12 @@ from aiohttp import web
 from aiohttp.web import View
 from aiohttp.web_exceptions import HTTPOk
 
-from some_aiohttp_middleware import AdminAuthHandler
+from some_aiohttp_middleware import AdminAuth
 
 
 @pytest.mark.asyncio
 async def test_config(caplog, aiohttp_client):
-    @AdminAuthHandler.decorate
+    @AdminAuth.decorate
     class TestView(View):
         async def get(self):
             raise HTTPOk
@@ -27,12 +27,12 @@ async def test_config(caplog, aiohttp_client):
 
 @pytest.mark.asyncio
 async def test_middleware(aiohttp_client):
-    @AdminAuthHandler.decorate
+    @AdminAuth.decorate
     class TestView1(View):
         async def get(self):
             raise HTTPOk
 
-    @AdminAuthHandler(admin_token="cb466ec795d74a8eb4a1c49e2feb2acd").decorate
+    @AdminAuth(admin_token="cb466ec795d74a8eb4a1c49e2feb2acd").decorate
     class TestView2(View):
         async def get(self):
             raise HTTPOk
