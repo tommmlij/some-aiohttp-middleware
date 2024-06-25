@@ -67,7 +67,7 @@ class BasicAuth(MiddlewareBase):
             )
 
         try:
-            auth = BasicAuthModel.parse_obj(
+            auth = BasicAuthModel.model_validate(
                 request.headers.getone("authorization", None)
             )
             if auth.user not in users or users[auth.user] != auth.password:
