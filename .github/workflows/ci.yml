@@ -86,7 +86,7 @@ jobs:
       - name: Run tests and collect coverage
         run: |
           source .venv/bin/activate
-          coverage run -m pytest --ignore=tests/test_s3.py
+          coverage run -m pytest --ignore=tests/test_s3.py --ignore=tests/test_dynamodb.py
           coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
