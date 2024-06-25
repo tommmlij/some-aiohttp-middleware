@@ -16,7 +16,7 @@ from aiohttp.web_exceptions import (  # isort:skip
 
 def bearer_check(v: Any) -> Any:
     try:
-        return re.match(r"^Bearer\s([a-z\d]*)$", v).group(1)
+        return re.match(r"^Bearer\s([a-zA-Z\d]*)$", v).group(1)
     except AttributeError:
         raise HTTPUnprocessableEntity(reason="Malformed bearer token")
 
