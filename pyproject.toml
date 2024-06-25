@@ -21,6 +21,7 @@ pydantic = "^2.6.4"
 pydantic-settings = "^2.2.1"
 aioboto3 = "^12.4.0"
 aiohttp-pydantic = "^2.1.0"
+aiomcache = "^0.8.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
