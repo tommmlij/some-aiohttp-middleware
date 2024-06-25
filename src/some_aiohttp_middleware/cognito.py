@@ -1,8 +1,6 @@
 import logging
-import sys
 
 import boto3
-from aiobotocore.session import get_session
 from aiohttp.web import Request, StreamResponse
 from pydantic_settings import BaseSettings
 
@@ -45,7 +43,7 @@ class CognitoSession:
         return self._pool_region
 
     async def __aenter__(self):
-        return boto3.client('cognito-idp', region_name=self.pool_region)
+        return boto3.client("cognito-idp", region_name=self.pool_region)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         pass
@@ -62,7 +60,7 @@ class Cognito(MiddlewareBase):
         request["cognito"] = CognitoSession(
             client_id=cognito_config.client,
             pool_id=cognito_config.pool,
-            pool_region=cognito_config.region
+            pool_region=cognito_config.region,
         )
 
         logging.debug(
@@ -71,7 +69,7 @@ class Cognito(MiddlewareBase):
 
     @staticmethod
     async def unhandle(
-            request: Request, response: StreamResponse, *args, **kwargs
+        request: Request, response: StreamResponse, *args, **kwargs
     ) -> StreamResponse:
         del request["cognito"]
         return response

@@ -30,7 +30,9 @@ class DynamoDBSession:
         assert self.table_name, "No dynamodb table name provided via parameter or env"
 
         self._table_region = table_region
-        assert self.table_region, "No dynamodb table region provided via parameter or env"
+        assert (
+            self.table_region
+        ), "No dynamodb table region provided via parameter or env"
 
         self.session = None
 
@@ -44,7 +46,7 @@ class DynamoDBSession:
 
     async def __aenter__(self):
         session = get_session()
-        self.session = session.create_client('dynamodb', region_name=self.table_region)
+        self.session = session.create_client("dynamodb", region_name=self.table_region)
         return await self.session.__aenter__()
 
     async def __aexit__(self, exc_type, exc_value, traceback):
@@ -65,8 +67,8 @@ class DynamoDB(MiddlewareBase):
 
         for name, config in dynamodb_configs.items():
             request["dynamodb"][name] = DynamoDBSession(
-                table_name=config.table,
-                table_region=config.region)
+                table_name=config.table, table_region=config.region
+            )
             logging.debug(
                 f"Connected table {name} to {config.table} in {config.region}"
             )
@@ -74,7 +76,7 @@ class DynamoDB(MiddlewareBase):
 
     @staticmethod
     async def unhandle(
-            request: Request, response: StreamResponse, *args, **kwargs
+        request: Request, response: StreamResponse, *args, **kwargs
     ) -> StreamResponse:
         for k, v in request["dynamodb"].items():
             await v.__aexit__(*sys.exc_info())

@@ -1,10 +1,9 @@
 import logging as log
-import sys
 
-from aiohttp.web import HTTPInternalServerError, Request, StreamResponse
+from aiohttp.web import Request, StreamResponse
+from aiomcache import Client
 from pydantic import IPvAnyAddress, conint
 from pydantic_settings import BaseSettings
-from aiomcache import Client
 
 from .base import MiddlewareBase
 
@@ -32,13 +31,15 @@ class Memcached(MiddlewareBase):
         except AttributeError:
             raise RuntimeError("Memcached definition needed in the configuration")
 
-        request["memcached"] = Client(getattr(memcached_config, "host"), getattr(memcached_config, "port"))
+        request["memcached"] = Client(
+            getattr(memcached_config, "host"), getattr(memcached_config, "port")
+        )
 
         return request
 
     @staticmethod
     async def unhandle(
-            request: Request, response: StreamResponse, *args, **kwargs
+        request: Request, response: StreamResponse, *args, **kwargs
     ) -> StreamResponse:
 
         client = request.get("memcached")

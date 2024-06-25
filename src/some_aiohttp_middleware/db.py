@@ -3,11 +3,21 @@ import sys
 from typing import Literal
 
 from aiohttp.web import HTTPInternalServerError, Request, StreamResponse
-from pydantic import IPvAnyAddress, conint, SecretStr, Field, computed_field, PostgresDsn, field_serializer
 from pydantic_settings import BaseSettings
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from .base import MiddlewareBase
+
+from pydantic import (  # isort:skip
+    Field,
+    IPvAnyAddress,
+    PostgresDsn,
+    SecretStr,
+    computed_field,
+    conint,
+    field_serializer,
+)
+
 
 log.getLogger().setLevel("INFO")
 
@@ -60,7 +70,7 @@ class DB(MiddlewareBase):
 
     @staticmethod
     async def unhandle(
-            request: Request, response: StreamResponse, *args, **kwargs
+        request: Request, response: StreamResponse, *args, **kwargs
     ) -> StreamResponse:
         kwargs = default_kwargs | kwargs
         session = request["db_session"][kwargs["db_name"]]
