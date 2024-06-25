@@ -1,7 +1,10 @@
 import logging as log
 import sys
+from typing import Literal
 
 from aiohttp.web import HTTPInternalServerError, Request, StreamResponse
+from pydantic import IPvAnyAddress, conint, SecretStr, Field, computed_field, PostgresDsn, field_serializer
+from pydantic_settings import BaseSettings
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from .base import MiddlewareBase
@@ -9,6 +12,36 @@ from .base import MiddlewareBase
 log.getLogger().setLevel("INFO")
 
 default_kwargs = {"db_name": "default"}
+
+
+class DBConfig(BaseSettings):
+    scheme: Literal["postgresql+asyncpg"] = "postgresql+asyncpg"
+    host: IPvAnyAddress | str = "localhost"
+    port: conint(ge=1024, le=65535) = 5432
+    username: str = "postgres"
+    password: SecretStr = Field(default="postgres", exclude=False)
+    database: str = "postgres"
+    pool_overflow: conint(ge=1, le=1000) = 10
+    pool_size_max: conint(ge=1, le=1000) = 50
+    pool_timeout: conint(ge=1, le=1000) = 120
+
+    class Config:
+        env_prefix = "S_"
+
+    def create_dsn(self, obfuscated=True):
+        pw = self.password if obfuscated else self.password.get_secret_value()
+        return PostgresDsn(
+            f"{self.scheme}://{self.username}:{pw}@{self.host}:{self.port}/{self.database}"
+        )
+
+    @computed_field(repr=True)
+    @property
+    def dsn(self) -> PostgresDsn:
+        return self.create_dsn(obfuscated=False)
+
+    @field_serializer("dsn")
+    def obfuscated(self, _dsn: PostgresDsn):
+        return self.create_dsn()
 
 
 class DB(MiddlewareBase):
@@ -27,7 +60,7 @@ class DB(MiddlewareBase):
 
     @staticmethod
     async def unhandle(
-        request: Request, response: StreamResponse, *args, **kwargs
+            request: Request, response: StreamResponse, *args, **kwargs
     ) -> StreamResponse:
         kwargs = default_kwargs | kwargs
         session = request["db_session"][kwargs["db_name"]]
@@ -48,7 +81,6 @@ class CTX:
         name = getattr(obj, self.name)
 
         async def func(app):
-
             pool_size_max = getattr(config, "pool_size_max", 20)
             max_overflow = getattr(config, "max_overflow", 10)
 
