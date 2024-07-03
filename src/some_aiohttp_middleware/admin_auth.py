@@ -3,7 +3,7 @@ import re
 from functools import reduce
 from typing import Annotated, Any
 
-from pydantic import AfterValidator, BaseModel, ValidationError, SecretStr
+from pydantic import AfterValidator, BaseModel, SecretStr, ValidationError
 
 from .base import MiddlewareBase
 
@@ -43,7 +43,11 @@ class AdminAuth(MiddlewareBase):
                 ),
                 dict(request.app.config),
             )
-            admin_token = admin_token.get_secret_value() if isinstance(admin_token, SecretStr) else admin_token
+            admin_token = (
+                admin_token.get_secret_value()
+                if isinstance(admin_token, SecretStr)
+                else admin_token
+            )
         except (KeyError, TypeError, AttributeError):
             raise HTTPInternalServerError(
                 reason="Missing configuration, either pass 'admin_token' or 'token_location'"
@@ -51,10 +55,10 @@ class AdminAuth(MiddlewareBase):
 
         try:
             if (
-                    Bearer(
-                        authorization=request.headers.getone("authorization", None)
-                    ).authorization
-                    != admin_token
+                Bearer(
+                    authorization=request.headers.getone("authorization", None)
+                ).authorization
+                != admin_token
             ):
                 raise HTTPUnauthorized
         except ValidationError:
