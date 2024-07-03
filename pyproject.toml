@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "some-aiohttp-middleware"
-version = "0.1.6"
+version = "0.1.11"
 license = "MIT"
 description = "Middleware framework for aiohttp"
 authors = ["tommmlij <tommmlij@gmail.com>"]
