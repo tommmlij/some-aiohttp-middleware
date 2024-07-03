@@ -2,6 +2,7 @@ import pytest
 from aiohttp import web
 from aiohttp.web import View
 from aiohttp.web_exceptions import HTTPOk
+from pydantic import SecretStr
 
 from some_aiohttp_middleware import AdminAuth
 
@@ -38,7 +39,7 @@ async def test_middleware(aiohttp_client):
             raise HTTPOk
 
     app = web.Application()
-    app.config = {"admin_token": "cb466ec795d74a8eb4a1c49e2feb2acd"}
+    app.config = {"admin_token": SecretStr("cb466ec795d74a8eb4a1c49e2feb2acd")}
     app.router.add_view("/tw1", TestView1)
     app.router.add_view("/tw2", TestView2)
 
