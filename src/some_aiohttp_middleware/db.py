@@ -95,7 +95,11 @@ class CTX:
             max_overflow = getattr(config, "max_overflow", 10)
 
             engine = create_async_engine(
-                config.dsn.get_secret_value() if isinstance(config.dsn, SecretStr) else str(config.dsn),
+                (
+                    config.dsn.get_secret_value()
+                    if isinstance(config.dsn, SecretStr)
+                    else str(config.dsn)
+                ),
                 pool_size=pool_size_max,
                 max_overflow=max_overflow,
                 pool_pre_ping=True,
